@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  newscraper:
+    networks:
+      - api_server_default
+    build: .
+    environment:
+      ENV_NAME: dev
+    ports:
+      - 7001:7001
+
+networks:
+  api_server_default:
