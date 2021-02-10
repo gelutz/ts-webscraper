@@ -17,7 +17,6 @@ const main = async () => {
         Ycombinator,
         // CNN
     ]
-    const file = readFileSync('./src/database/news.json')
     
     sites.forEach(async (site, i) => {
         const news: INew[] = await site.fetch()
