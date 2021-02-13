@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from 'fs'
 
 import { ISite, INew } from './types'
-
-import oldNews from './database/news.json'
+import api from './database/api'
 
 // modules
 import Ycombinator from './modules/ycombinator'
 import CNN from './modules/cnn'
+import { AxiosResponse } from 'axios'
 
 
 const main = async () => {
@@ -19,6 +19,10 @@ const main = async () => {
     ]
     
     sites.forEach(async (site, i) => {
+
+        const response: AxiosResponse<INew[]> = await api.get<INew[]>('news/latest')
+        const oldNews = response.data
+
         const news: INew[] = await site.fetch()
 
         news.filter((item, index, array) => {
@@ -32,12 +36,18 @@ const main = async () => {
         })
         const data = JSON.stringify(news, null, '\t')
         
-        writeFileSync('./src/database/news.json', data)
+        // writeFileSync('./src/database/news.json', data)
+        // sim, tem um post dentro de um forEach
+        api.post('news', data).then(() => {
+            alert('Pacote com notícias enviado:' + site.from)
+        }).catch(() => {
+            alert('Erro ao salvar notícia do:' + site.from)
+        })
     })
 
     // fazer a função rodar novamente após x tempo
-    //            k    sec  min
-    const time = 1000 * 60 * 15
+    //            k    sec  min 
+    const time = 1000 * 60 * 15 // = 5 minutos
     setTimeout(main, time)
 }
 
